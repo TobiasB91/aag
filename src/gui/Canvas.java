@@ -20,6 +20,7 @@ public class Canvas extends JPanel implements MouseListener{
 	
 	private Graph graph = null;
 	private Vertex markedVertex = null;
+	private Edge markedEdge = null;
 	
 	public Canvas() {
 		addMouseListener(this);
@@ -31,14 +32,18 @@ public class Canvas extends JPanel implements MouseListener{
 		super.paintComponent(g);
 			
 		
-		((Graphics2D)g).setStroke(new BasicStroke(2));
+		((Graphics2D)g).setStroke(new BasicStroke(6));
 		g.setColor(new Color(0,0,0));
 		for(Vertex v : graph.getVertices()) {
 			g.fillOval(v.getX()-VERTEX_SIZE/2, v.getY()-VERTEX_SIZE/2, VERTEX_SIZE, VERTEX_SIZE);
 		}
 		
 		for(Edge e : graph.getEdges()) {
-			g.drawLine(e.getSource().getX(),e.getSource().getY(), e.getTarget().getX(), e.getTarget().getY());
+			int sourceX = e.getSource().getX(), sourceY = e.getSource().getY(), targetX = e.getTarget().getX(), targetY = e.getTarget().getY();
+			g.drawLine(sourceX,sourceY,targetX,targetY);
+			boolean isHorizontal = Math.abs(sourceX - targetX) > Math.abs(sourceY - targetY);
+			g.drawString(new Integer(e.getWeight()).toString(), Math.min(sourceX, targetX) + Math.abs(targetX - sourceX)/2 + (isHorizontal ? 0 : 20),
+					Math.min(sourceY, targetY) + Math.abs(targetY - sourceY)/2 + (isHorizontal? -20 : 0));
 		}
 		
 		if(markedVertex != null) {
@@ -46,6 +51,13 @@ public class Canvas extends JPanel implements MouseListener{
 			((Graphics2D)g).setStroke(new BasicStroke(5));
 			g.drawOval(markedVertex.getX()-VERTEX_SIZE/2, markedVertex.getY()-VERTEX_SIZE/2, VERTEX_SIZE+1, VERTEX_SIZE+1);
 		}
+		
+		if(markedEdge != null) {
+			g.setColor(new Color(255,0,0));
+			((Graphics2D)g).setStroke(new BasicStroke(7));
+			g.drawLine(markedEdge.getSource().getX(), markedEdge.getSource().getY(), markedEdge.getTarget().getX(), markedEdge.getTarget().getY());
+		}
+		
 	}
 
 	public void mouseClicked(MouseEvent e) {
@@ -63,16 +75,22 @@ public class Canvas extends JPanel implements MouseListener{
 	}
 
 	public void mousePressed(MouseEvent e) {
-		System.out.println("x: "+e.getX() + "  y: "+e.getY());
 		int mouseX = e.getX();
 		int mouseY = e.getY();
 		Vertex collVertex = getCollidingVertex(mouseX,mouseY);
 
 		if(collVertex == null && e.getButton() == MouseEvent.BUTTON1) {
-			graph.addVertex(new Vertex(mouseX, mouseY));
+			Edge edge = getCollidingEdge(mouseX, mouseY);
+			if(edge == null) {
+				graph.addVertex(new Vertex(mouseX, mouseY));
+			} else {
+				markedEdge = edge;
+				markedVertex = null;
+			}
 		} else if(e.getButton() == MouseEvent.BUTTON1) {
 			if(markedVertex == null) {
 				markedVertex = collVertex;
+				markedEdge = null;
 			} else {
 				Edge newEdge = new Edge(markedVertex, collVertex);
 				if(!graph.getEdges().contains(newEdge)) {
@@ -82,6 +100,8 @@ public class Canvas extends JPanel implements MouseListener{
 			}
 		} else if(e.getButton() == MouseEvent.BUTTON3) {
 			graph.deleteVertex(collVertex);
+			markedVertex = null;
+			markedEdge = null;
 		}
 		repaint();
 	}
@@ -89,6 +109,13 @@ public class Canvas extends JPanel implements MouseListener{
 	public void mouseReleased(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void updateWeight(int weight) {
+		if(markedEdge != null) {
+			markedEdge.setWeight(weight);
+		}
+		repaint();
 	}
 	
 	private Vertex getCollidingVertex(int x, int y) {
@@ -100,4 +127,23 @@ public class Canvas extends JPanel implements MouseListener{
 		return null;
 	}
 
+	
+	private Edge getCollidingEdge(int x, int y) {
+		for(Edge e : graph.getEdges()) {
+			double deltaX = e.getTarget().getX() - e.getSource().getX();
+			double deltaY = e.getTarget().getY() - e.getSource().getY();
+			double normalY = -deltaX / deltaY;
+			double normalLength = Math.sqrt((Math.pow(normalY,2)+1));
+			double normalizedX = 1/normalLength;
+			double normalizedY = normalY/normalLength;
+			double c = e.getSource().getX() * normalizedX + e.getSource().getY() * normalizedY;
+			double distance = Math.abs(x * normalizedX + y * normalizedY - c);
+			
+			if(distance <= 20 && x > Math.min(e.getTarget().getX(), e.getSource().getX()) && x < Math.max(e.getTarget().getX(),e.getSource().getX()) 
+					&& y > Math.min(e.getTarget().getY(), e.getSource().getY()) && y < Math.max(e.getTarget().getY(), e.getSource().getY())) {
+				return e;
+			}
+		}
+		return null;
+	}
 }
