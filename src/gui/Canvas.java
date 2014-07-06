@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -35,12 +36,41 @@ public class Canvas extends JPanel implements MouseListener{
 		((Graphics2D)g).setStroke(new BasicStroke(6));
 		g.setColor(new Color(0,0,0));
 		for(Vertex v : graph.getVertices()) {
-			g.fillOval(v.getX()-VERTEX_SIZE/2, v.getY()-VERTEX_SIZE/2, VERTEX_SIZE, VERTEX_SIZE);
+			g.drawOval(v.getX()-VERTEX_SIZE/2, v.getY()-VERTEX_SIZE/2, VERTEX_SIZE, VERTEX_SIZE);
+			g.drawString("" + v.getID(), v.getX()-VERTEX_SIZE/10, v.getY()+VERTEX_SIZE/10);
 		}
 		
 		for(Edge e : graph.getEdges()) {
 			int sourceX = e.getSource().getX(), sourceY = e.getSource().getY(), targetX = e.getTarget().getX(), targetY = e.getTarget().getY();
-			g.drawLine(sourceX,sourceY,targetX,targetY);
+			
+			
+			double deltaX = targetX - sourceX;
+			double deltaY = targetY - sourceY;
+			double length = Math.sqrt(deltaX*deltaX + deltaY*deltaY);
+			deltaX = deltaX/length;
+			deltaY = deltaY/length;
+			int[] arrowPointsX = new int[3];
+			int[] arrowPointsY = new int[3];
+			arrowPointsX[0] = (int)(targetX-VERTEX_SIZE/2*deltaX);
+			arrowPointsY[0] = (int)(targetY-VERTEX_SIZE/2*deltaY);
+			g.drawLine((int)(sourceX+VERTEX_SIZE/2*deltaX),(int)(sourceY+VERTEX_SIZE/2*deltaY),arrowPointsX[0],arrowPointsY[0]);
+			
+			double lineX = arrowPointsX[0] - VERTEX_SIZE/3*deltaX;
+			double lineY = arrowPointsY[0] - VERTEX_SIZE/3*deltaY;
+			double normalX = 1;
+			double normalY = -deltaX / deltaY;
+			double normalLength = Math.sqrt(1 + normalY*normalY);
+			normalX = normalX / normalLength;
+			normalY = normalY / normalLength;
+			arrowPointsX[1] = (int)(lineX + normalX*VERTEX_SIZE/3);
+			arrowPointsX[2] = (int)(lineX - normalX*VERTEX_SIZE/3);
+			
+			arrowPointsY[1] = (int)(lineY + normalY*VERTEX_SIZE/3);
+			arrowPointsY[2] = (int)(lineY - normalY*VERTEX_SIZE/3);
+			
+			g.fillPolygon(arrowPointsX, arrowPointsY, 3);
+			
+			
 			boolean isHorizontal = Math.abs(sourceX - targetX) > Math.abs(sourceY - targetY);
 			g.drawString(new Integer(e.getWeight()).toString(), Math.min(sourceX, targetX) + Math.abs(targetX - sourceX)/2 + (isHorizontal ? 0 : 20),
 					Math.min(sourceY, targetY) + Math.abs(targetY - sourceY)/2 + (isHorizontal? -20 : 0));
