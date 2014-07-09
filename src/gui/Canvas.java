@@ -2,19 +2,18 @@ package gui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import common.Edge;
 import common.Graph;
 import common.Vertex;
 
+@SuppressWarnings("serial")
 public class Canvas extends JPanel implements MouseListener{
 
 	public static final int VERTEX_SIZE = 50;
@@ -88,6 +87,10 @@ public class Canvas extends JPanel implements MouseListener{
 			g.drawLine(markedEdge.getSource().getX(), markedEdge.getSource().getY(), markedEdge.getTarget().getX(), markedEdge.getTarget().getY());
 		}
 		
+		if(MainFrame.currentAlgorithm != null) {
+			MainFrame.currentAlgorithm.print(g);
+		}
+		
 	}
 
 	public void mouseClicked(MouseEvent e) {
@@ -95,13 +98,11 @@ public class Canvas extends JPanel implements MouseListener{
 	}
 
 	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void mousePressed(MouseEvent e) {
@@ -137,8 +138,6 @@ public class Canvas extends JPanel implements MouseListener{
 	}
 
 	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	public void updateWeight(int weight) {
@@ -146,6 +145,14 @@ public class Canvas extends JPanel implements MouseListener{
 			markedEdge.setWeight(weight);
 		}
 		repaint();
+	}
+	
+	public Vertex getMarkedVertex() {
+		return markedVertex;
+	}
+	
+	public Graph getGraph() {
+		return graph;
 	}
 	
 	private Vertex getCollidingVertex(int x, int y) {
@@ -157,7 +164,6 @@ public class Canvas extends JPanel implements MouseListener{
 		return null;
 	}
 
-	
 	private Edge getCollidingEdge(int x, int y) {
 		for(Edge e : graph.getEdges()) {
 			double deltaX = e.getTarget().getX() - e.getSource().getX();
@@ -176,4 +182,5 @@ public class Canvas extends JPanel implements MouseListener{
 		}
 		return null;
 	}
+
 }
