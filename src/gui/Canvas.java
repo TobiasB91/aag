@@ -40,51 +40,20 @@ public class Canvas extends JPanel implements MouseListener{
 		}
 		
 		for(Edge e : graph.getEdges()) {
-			int sourceX = e.getSource().getX(), sourceY = e.getSource().getY(), targetX = e.getTarget().getX(), targetY = e.getTarget().getY();
-			
-			
-			double deltaX = targetX - sourceX;
-			double deltaY = targetY - sourceY;
-			double length = Math.sqrt(deltaX*deltaX + deltaY*deltaY);
-			deltaX = deltaX/length;
-			deltaY = deltaY/length;
-			int[] arrowPointsX = new int[3];
-			int[] arrowPointsY = new int[3];
-			arrowPointsX[0] = (int)(targetX-VERTEX_SIZE/2*deltaX);
-			arrowPointsY[0] = (int)(targetY-VERTEX_SIZE/2*deltaY);
-			g.drawLine((int)(sourceX+VERTEX_SIZE/2*deltaX),(int)(sourceY+VERTEX_SIZE/2*deltaY),arrowPointsX[0],arrowPointsY[0]);
-			
-			double lineX = arrowPointsX[0] - VERTEX_SIZE/3*deltaX;
-			double lineY = arrowPointsY[0] - VERTEX_SIZE/3*deltaY;
-			double normalX = 1;
-			double normalY = -deltaX / deltaY;
-			double normalLength = Math.sqrt(1 + normalY*normalY);
-			normalX = normalX / normalLength;
-			normalY = normalY / normalLength;
-			arrowPointsX[1] = (int)(lineX + normalX*VERTEX_SIZE/3);
-			arrowPointsX[2] = (int)(lineX - normalX*VERTEX_SIZE/3);
-			
-			arrowPointsY[1] = (int)(lineY + normalY*VERTEX_SIZE/3);
-			arrowPointsY[2] = (int)(lineY - normalY*VERTEX_SIZE/3);
-			
-			g.fillPolygon(arrowPointsX, arrowPointsY, 3);
-			
-			
-			boolean isHorizontal = Math.abs(sourceX - targetX) > Math.abs(sourceY - targetY);
-			g.drawString(new Integer(e.getWeight()).toString(), Math.min(sourceX, targetX) + Math.abs(targetX - sourceX)/2 + (isHorizontal ? 0 : 20),
-					Math.min(sourceY, targetY) + Math.abs(targetY - sourceY)/2 + (isHorizontal? -20 : 0));
+			printWeightArrow(g, new Integer(e.getWeight()).toString(), Color.BLACK, e.getSource().getX(),
+					e.getSource().getY(), e.getTarget().getX(), e.getTarget().getY(), 0);
 		}
 		
-		if(markedVertex != null) {
+		if(markedVertex != null && MainFrame.currentAlgorithm == null) {
 			g.setColor(new Color(255,0,0));
 			((Graphics2D)g).setStroke(new BasicStroke(5));
 			g.drawOval(markedVertex.getX()-VERTEX_SIZE/2, markedVertex.getY()-VERTEX_SIZE/2, VERTEX_SIZE+1, VERTEX_SIZE+1);
 		}
 		
 		if(markedEdge != null) {
-			g.setColor(new Color(255,0,0));
 			((Graphics2D)g).setStroke(new BasicStroke(7));
-			g.drawLine(markedEdge.getSource().getX(), markedEdge.getSource().getY(), markedEdge.getTarget().getX(), markedEdge.getTarget().getY());
+			printArrow(g, Color.RED, markedEdge.getSource().getX(), markedEdge.getSource().getY(),
+					markedEdge.getTarget().getX(), markedEdge.getTarget().getY());
 		}
 		
 		if(MainFrame.currentAlgorithm != null) {
@@ -181,6 +150,45 @@ public class Canvas extends JPanel implements MouseListener{
 			}
 		}
 		return null;
+	}
+	
+	public static void printArrow(Graphics g, Color color, double sourceX, double sourceY, double targetX, double targetY) {
+		
+		Color clrTmp = g.getColor();
+		g.setColor(color);
+		double deltaX = targetX - sourceX;
+		double deltaY = targetY - sourceY;
+		double length = Math.sqrt(deltaX*deltaX + deltaY*deltaY);
+		deltaX = deltaX/length;
+		deltaY = deltaY/length;
+		int[] arrowPointsX = new int[3];
+		int[] arrowPointsY = new int[3];
+		arrowPointsX[0] = (int)(targetX-VERTEX_SIZE/2*deltaX);
+		arrowPointsY[0] = (int)(targetY-VERTEX_SIZE/2*deltaY);
+		g.drawLine((int)(sourceX+VERTEX_SIZE/2*deltaX),(int)(sourceY+VERTEX_SIZE/2*deltaY),arrowPointsX[0],arrowPointsY[0]);
+		double lineX = arrowPointsX[0] - VERTEX_SIZE/3*deltaX;
+		double lineY = arrowPointsY[0] - VERTEX_SIZE/3*deltaY;
+		double normalX = 1;
+		double normalY = -deltaX / deltaY;
+		double normalLength = Math.sqrt(1 + normalY*normalY);
+		normalX = normalX / normalLength;
+		normalY = normalY / normalLength;
+		arrowPointsX[1] = (int)(lineX + normalX*VERTEX_SIZE/3);
+		arrowPointsX[2] = (int)(lineX - normalX*VERTEX_SIZE/3);
+		arrowPointsY[1] = (int)(lineY + normalY*VERTEX_SIZE/3);
+		arrowPointsY[2] = (int)(lineY - normalY*VERTEX_SIZE/3);
+		g.fillPolygon(arrowPointsX, arrowPointsY, 3);
+		g.setColor(clrTmp);
+	}
+	
+	public static void printWeightArrow(Graphics g, String weight, Color color, double sourceX, double sourceY, double targetX, double targetY, int offset) {
+		printArrow(g, color, sourceX, sourceY, targetX, targetY);
+		boolean isHorizontal = Math.abs(sourceX - targetX) > Math.abs(sourceY - targetY);
+		Color tmpClr = g.getColor();
+		g.setColor(color);
+		g.drawString((new Integer(Integer.MAX_VALUE).toString().equals(weight)? "Infinity" : weight), (int) (Math.min(sourceX, targetX) + Math.abs(targetX - sourceX)/2 + (isHorizontal ? 0 : 20 + offset)),
+				(int) (Math.min(sourceY, targetY) + Math.abs(targetY - sourceY)/2 + (isHorizontal? -20 - offset : 0)));
+		g.setColor(tmpClr);
 	}
 
 }

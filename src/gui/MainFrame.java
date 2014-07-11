@@ -20,6 +20,7 @@ import javax.swing.JToggleButton;
 
 import algorithms.Algorithm;
 import algorithms.Dijkstra;
+import algorithms.FloydWarshall;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
@@ -49,14 +50,9 @@ public class MainFrame extends JFrame {
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-
-		
-		
 		JLabel lblWeight = new JLabel("weight:");
 		lblWeight.setBounds(25, 40, 50, 20);
 		panel.add(lblWeight);
-		
-		
 		
 		canvas = new Canvas();
 		canvas.setBackground(UIManager.getColor("CheckBox.background"));
@@ -120,6 +116,12 @@ public class MainFrame extends JFrame {
 		JToggleButton tglbtnDijkstra = new JToggleButton("Dijkstra");
 		tglbtnDijkstra.setBounds(10, 265, 121, 23);
 		panel.add(tglbtnDijkstra);
+		
+		JToggleButton tglbtnFloydWarshall = new JToggleButton("Floyd-Warshall");
+		tglbtnFloydWarshall.setBounds(10, 288, 121, 23);
+		panel.add(tglbtnFloydWarshall);
+		
+
 		tglbtnDijkstra.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -131,6 +133,20 @@ public class MainFrame extends JFrame {
 				canvas.repaint();
 			}
 		});
+		
+		tglbtnFloydWarshall.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange()==ItemEvent.SELECTED && canvas.getMarkedVertex() != null) {
+					currentAlgorithm = new FloydWarshall(canvas.getGraph());
+			      } else if(e.getStateChange()==ItemEvent.DESELECTED) {
+			    	currentAlgorithm = null;
+			      }
+				canvas.repaint();
+			}
+		});
+		
+
 		
 		contentPane.repaint();
 	}

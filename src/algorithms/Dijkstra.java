@@ -144,35 +144,7 @@ public class Dijkstra implements Algorithm {
 		g.setColor(new Color(0,0,0));
 		
 		if(currentVertex != null && updatedVertex != null) {
-			g.setColor(new Color(0,150,0));
-			double targetX = updatedVertex.getX(), targetY = updatedVertex.getY(), sourceX = currentVertex.getX(), sourceY = currentVertex.getY();
-			int VERTEX_SIZE = Canvas.VERTEX_SIZE;
-			double deltaX = targetX - sourceX;
-			double deltaY = targetY - sourceY;
-			double length = Math.sqrt(deltaX*deltaX + deltaY*deltaY);
-			deltaX = deltaX/length;
-			deltaY = deltaY/length;
-			int[] arrowPointsX = new int[3];
-			int[] arrowPointsY = new int[3];
-			arrowPointsX[0] = (int)(targetX-VERTEX_SIZE/2*deltaX);
-			arrowPointsY[0] = (int)(targetY-VERTEX_SIZE/2*deltaY);
-			g.drawLine((int)(sourceX+VERTEX_SIZE/2*deltaX),(int)(sourceY+VERTEX_SIZE/2*deltaY),arrowPointsX[0],arrowPointsY[0]);
-			
-			double lineX = arrowPointsX[0] - VERTEX_SIZE/3*deltaX;
-			double lineY = arrowPointsY[0] - VERTEX_SIZE/3*deltaY;
-			double normalX = 1;
-			double normalY = -deltaX / deltaY;
-			double normalLength = Math.sqrt(1 + normalY*normalY);
-			normalX = normalX / normalLength;
-			normalY = normalY / normalLength;
-			arrowPointsX[1] = (int)(lineX + normalX*VERTEX_SIZE/3);
-			arrowPointsX[2] = (int)(lineX - normalX*VERTEX_SIZE/3);
-			
-			arrowPointsY[1] = (int)(lineY + normalY*VERTEX_SIZE/3);
-			arrowPointsY[2] = (int)(lineY - normalY*VERTEX_SIZE/3);
-			
-			g.fillPolygon(arrowPointsX, arrowPointsY, 3);
-			g.setColor(new Color(0,0,0));
+			Canvas.printArrow(g, new Color(0,150,0), currentVertex.getX(), currentVertex.getY(), updatedVertex.getX(), updatedVertex.getY());
 		}
 		
 		if(currentVertex != null) {
