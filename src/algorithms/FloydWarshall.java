@@ -13,17 +13,12 @@ import common.Vertex;
 @SuppressWarnings("unused")
 public class FloydWarshall implements Algorithm {
 	
-	enum AlgorithmState {
-		
-	}
 	
 	private Graph graph = null;
 	private int[][] dist;
 	private int k = 1;
 	private int i = 0;
 	private int j = 0;
-	
-	private AlgorithmState currentState = null;
 	
 	public FloydWarshall(Graph graph) {
 		init(graph);
@@ -132,5 +127,9 @@ public class FloydWarshall implements Algorithm {
 			g.drawString((dist[i][n] == Integer.MAX_VALUE? "Infinity"  : new Integer(dist[i][n]).toString()),
 					v.getX() - Canvas.VERTEX_SIZE/2, v.getY() - Canvas.VERTEX_SIZE/4*3);
 		}
+	}
+	
+	public int[][] getDist() {
+		return dist;
 	}
 }

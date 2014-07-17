@@ -40,8 +40,14 @@ public class Canvas extends JPanel implements MouseListener{
 		}
 		
 		for(Edge e : graph.getEdges()) {
-			printWeightArrow(g, new Integer(e.getWeight()).toString(), Color.BLACK, e.getSource().getX(),
-					e.getSource().getY(), e.getTarget().getX(), e.getTarget().getY(), 0);
+			if(MainFrame.directed) {
+				printWeightArrow(g, new Integer(e.getWeight()).toString(), Color.BLACK, e.getSource().getX(),
+						e.getSource().getY(), e.getTarget().getX(), e.getTarget().getY(), 0);
+			} else {
+				printWeightLine(g, new Integer(e.getWeight()).toString(), Color.BLACK, e.getSource().getX(),
+						e.getSource().getY(), e.getTarget().getX(), e.getTarget().getY(), 0);
+			}
+					
 		}
 		
 		if(markedVertex != null && MainFrame.currentAlgorithm == null) {
@@ -152,6 +158,32 @@ public class Canvas extends JPanel implements MouseListener{
 		return null;
 	}
 	
+	public static void printLine(Graphics g, Color color, double sourceX, double sourceY, double targetX, double targetY) {
+		Color clrTmp = g.getColor();
+		g.setColor(color);
+		double deltaX = targetX - sourceX;
+		double deltaY = targetY - sourceY;
+		double length = Math.sqrt(deltaX*deltaX + deltaY*deltaY);
+		deltaX = deltaX/length;
+		deltaY = deltaY/length;
+		int[] arrowPointsX = new int[3];
+		int[] arrowPointsY = new int[3];
+		arrowPointsX[0] = (int)(targetX-VERTEX_SIZE/2*deltaX);
+		arrowPointsY[0] = (int)(targetY-VERTEX_SIZE/2*deltaY);
+		g.drawLine((int)(sourceX+VERTEX_SIZE/2*deltaX),(int)(sourceY+VERTEX_SIZE/2*deltaY),arrowPointsX[0],arrowPointsY[0]);
+		g.setColor(clrTmp);
+	}
+	
+	public static void printWeightLine(Graphics g, String weight, Color color, double sourceX, double sourceY, double targetX, double targetY, int offset) {
+		printLine(g, color, sourceX, sourceY, targetX, targetY);
+		boolean isHorizontal = Math.abs(sourceX - targetX) > Math.abs(sourceY - targetY);
+		Color tmpClr = g.getColor();
+		g.setColor(color);
+		g.drawString((new Integer(Integer.MAX_VALUE).toString().equals(weight)? "Infinity" : weight), (int) (Math.min(sourceX, targetX) + Math.abs(targetX - sourceX)/2 + (isHorizontal ? 0 : 20 + offset)),
+				(int) (Math.min(sourceY, targetY) + Math.abs(targetY - sourceY)/2 + (isHorizontal? -20 - offset : 0)));
+		g.setColor(tmpClr);
+	}
+	
 	public static void printArrow(Graphics g, Color color, double sourceX, double sourceY, double targetX, double targetY) {
 		
 		Color clrTmp = g.getColor();
@@ -189,6 +221,11 @@ public class Canvas extends JPanel implements MouseListener{
 		g.drawString((new Integer(Integer.MAX_VALUE).toString().equals(weight)? "Infinity" : weight), (int) (Math.min(sourceX, targetX) + Math.abs(targetX - sourceX)/2 + (isHorizontal ? 0 : 20 + offset)),
 				(int) (Math.min(sourceY, targetY) + Math.abs(targetY - sourceY)/2 + (isHorizontal? -20 - offset : 0)));
 		g.setColor(tmpClr);
+	}
+	
+	public static void printX(Graphics g, double sourceX, double sourceY, double targetX, double targetY) {
+		g.drawLine((int) Math.min(sourceX, targetX), (int) Math.min(sourceY, targetY), (int) Math.max(sourceX, targetX), (int) Math.max(sourceY, targetY));
+		g.drawLine((int) Math.min(sourceX, targetX), (int) Math.max(sourceY, targetY), (int) Math.max(sourceX, targetX), (int) Math.min(sourceY, targetY));
 	}
 
 }
