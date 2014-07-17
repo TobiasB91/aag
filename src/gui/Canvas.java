@@ -90,29 +90,31 @@ public class Canvas extends JPanel implements MouseListener{
 		int mouseY = e.getY();
 		Vertex collVertex = getCollidingVertex(mouseX,mouseY);
 
-		if(collVertex == null && e.getButton() == MouseEvent.BUTTON1) {
-			Edge edge = getCollidingEdge(mouseX, mouseY);
-			if(edge == null) {
-				graph.addVertex(new Vertex(mouseX, mouseY));
-			} else {
-				markedEdge = edge;
-				markedVertex = null;
-			}
-		} else if(e.getButton() == MouseEvent.BUTTON1) {
-			if(markedVertex == null) {
-				markedVertex = collVertex;
-				markedEdge = null;
-			} else {
-				Edge newEdge = new Edge(markedVertex, collVertex);
-				if(!graph.getEdges().contains(newEdge)) {
-					graph.addEdge(newEdge);
+		if(MainFrame.currentAlgorithm == null) {
+			if(collVertex == null && e.getButton() == MouseEvent.BUTTON1) {
+				Edge edge = getCollidingEdge(mouseX, mouseY);
+				if(edge == null) {
+					graph.addVertex(new Vertex(mouseX, mouseY));
+				} else {
+					markedEdge = edge;
+					markedVertex = null;
 				}
+			} else if(e.getButton() == MouseEvent.BUTTON1) {
+				if(markedVertex == null) {
+					markedVertex = collVertex;
+					markedEdge = null;
+				} else {
+					Edge newEdge = new Edge(markedVertex, collVertex);
+					if(!graph.getEdges().contains(newEdge)) {
+						graph.addEdge(newEdge);
+					}
+					markedVertex = null;
+				}
+			} else if(e.getButton() == MouseEvent.BUTTON3) {
+				graph.deleteVertex(collVertex);
 				markedVertex = null;
+				markedEdge = null;
 			}
-		} else if(e.getButton() == MouseEvent.BUTTON3) {
-			graph.deleteVertex(collVertex);
-			markedVertex = null;
-			markedEdge = null;
 		}
 		repaint();
 	}

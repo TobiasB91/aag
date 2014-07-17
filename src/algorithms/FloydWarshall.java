@@ -16,7 +16,7 @@ public class FloydWarshall implements Algorithm {
 	
 	private Graph graph = null;
 	private int[][] dist;
-	private int k = 1;
+	private int k = 0;
 	private int i = 0;
 	private int j = 0;
 	
@@ -40,7 +40,7 @@ public class FloydWarshall implements Algorithm {
 						existsEdge = true;
 					}
 				}
-				if(!existsEdge) {
+				if(!existsEdge && i != j) {
 					dist[i][j] = Integer.MAX_VALUE;
 				}
 			}

@@ -27,45 +27,53 @@ public class Kruskal implements Algorithm {
 	
 	Graph graph = null;
 	boolean graphConnected = true;
+	boolean emptyGraph = false;
 	PriorityQueue<Edge> sortedEdges = null;  
 	Set<Edge> minEdges = null;
+	Set<Edge> circleEdges = null;
 	int currentEdge = 0;
 	AlgorithmState currentState = AlgorithmState.Initiating;
 	
 	public Kruskal(Graph graph) {
-		this.graph = graph;
-		minEdges = new HashSet<Edge>();
-		currentEdge = 0;
-		//Checking connectedness
-		List<Edge> edges = new ArrayList<Edge>();
-		
-		for(Edge e : graph.getEdges()) {
-			edges.add(e);
-			edges.add(new Edge(e.getTarget(), e.getSource()));
-		}
-		
-		FloydWarshall fw = new FloydWarshall(new Graph(graph.getVertices(), edges));
-		fw.play();
-		int[][] dist = fw.getDist();
-		
-
-		
-		boolean isConnected = true;
-		for(int j = 0; j < graph.getVertices().size(); j++) {
-			int min = Integer.MAX_VALUE;
-			for(int i = 0; i < graph.getVertices().size(); i++) {
-				if(dist[i][j] < min) {
-					min = dist[i][j];
-				} else if(dist[i][j] >= Integer.MAX_VALUE){
-					isConnected = false;
+		if(!graph.getVertices().isEmpty()) {
+			this.graph = graph;
+			minEdges = new HashSet<Edge>();
+			circleEdges = new HashSet<Edge>();
+			currentEdge = 0;
+			//Checking connectedness
+			List<Edge> edges = new ArrayList<Edge>();
+			
+			for(Edge e : graph.getEdges()) {
+				edges.add(e);
+				edges.add(new Edge(e.getTarget(), e.getSource(), e.getWeight()));
+			}
+			
+			FloydWarshall fw = new FloydWarshall(new Graph(graph.getVertices(), edges));
+			fw.play();
+			int[][] dist = fw.getDist();
+			
+	
+			
+			boolean isConnected = true;
+			for(int j = 0; j < graph.getVertices().size(); j++) {
+				int min = Integer.MAX_VALUE;
+				for(int i = 0; i < graph.getVertices().size(); i++) {
+					if(dist[i][j] < min) {
+						min = dist[i][j];
+					} else if(dist[i][j] >= Integer.MAX_VALUE){
+						isConnected = false;
+					}
 				}
 			}
-		}
-		if(!isConnected) {
-			graphConnected = false;
-			currentState = AlgorithmState.Finished;
+			if(!isConnected) {
+				graphConnected = false;
+				currentState = AlgorithmState.Finished;
+			} else {
+				currentState = AlgorithmState.SortingEdges;
+			}
 		} else {
-			currentState = AlgorithmState.SortingEdges;
+			emptyGraph = true;
+			currentState = AlgorithmState.Finished;
 		}
 		//
 	}
@@ -75,7 +83,11 @@ public class Kruskal implements Algorithm {
 		switch(currentState) {
 		
 		case SortingEdges: 
-			sortedEdges = new PriorityQueue<Edge>(graph.getEdges().size(), new WeightComparator());
+			if(!graph.getEdges().isEmpty()) {
+				sortedEdges = new PriorityQueue<Edge>(graph.getEdges().size(), new WeightComparator());
+			} else {
+				sortedEdges = new PriorityQueue<Edge>();
+			}
 			for(Edge e : graph.getEdges()) {
 				sortedEdges.add(e);
 			}
@@ -102,6 +114,8 @@ public class Kruskal implements Algorithm {
 				HashMap<Vertex, Integer> distance = d.getDistance();
 				if((distance.get(e.getTarget()) == Integer.MAX_VALUE)) {
 					minEdges.add(e);
+				} else {
+					circleEdges.add(e);
 				}
 			}
 			return true;
@@ -137,15 +151,23 @@ public class Kruskal implements Algorithm {
 			for(Edge e : minEdges) {
 				Canvas.printLine(g, new Color(0,150,0), e.getSource().getX(), e.getSource().getY(), e.getTarget().getX(), e.getTarget().getY());
 			}
+			for(Edge e : circleEdges) {
+				Canvas.printLine(g, Color.RED, e.getSource().getX(), e.getSource().getY(), e.getTarget().getX(), e.getTarget().getY());
+			}
 			break;
 			
 		case Finished:
-			if(!graphConnected) {
+			if(emptyGraph) {
+				g.drawString("There is an empty graph.", 10, 10);
+			} else if(!graphConnected) {
 				g.drawString("The graph is not connected. Cannot use this algorithm.", 10, 10);
 			} else {
-				g.drawString("This is the minimal spanning tree.", 10, 10);
+				g.drawString("This is the minimal spanning tree. Green edges were token, red ones would create a circle.", 10, 10);
 				for(Edge e : minEdges) {
 					Canvas.printLine(g, new Color(0,150,0), e.getSource().getX(), e.getSource().getY(), e.getTarget().getX(), e.getTarget().getY());
+				}
+				for(Edge e : circleEdges) {
+					Canvas.printLine(g, Color.RED, e.getSource().getX(), e.getSource().getY(), e.getTarget().getX(), e.getTarget().getY());
 				}
 			}
 			break;
