@@ -58,8 +58,13 @@ public class Canvas extends JPanel implements MouseListener{
 		
 		if(markedEdge != null) {
 			((Graphics2D)g).setStroke(new BasicStroke(7));
-			printArrow(g, Color.RED, markedEdge.getSource().getX(), markedEdge.getSource().getY(),
+			if(MainFrame.directed) {
+				printArrow(g, Color.RED, markedEdge.getSource().getX(), markedEdge.getSource().getY(),
 					markedEdge.getTarget().getX(), markedEdge.getTarget().getY());
+			} else {
+				printLine(g, Color.RED, markedEdge.getSource().getX(), markedEdge.getSource().getY(),
+						markedEdge.getTarget().getX(), markedEdge.getTarget().getY());
+			}
 		}
 		
 		if(MainFrame.currentAlgorithm != null) {
