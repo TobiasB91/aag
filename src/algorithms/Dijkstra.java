@@ -191,4 +191,8 @@ public class Dijkstra implements Algorithm {
 		}
 		
 	}
+	
+	public HashMap<Vertex, Integer> getDistance() {
+		return distance;
+	}
 }

@@ -5,15 +5,12 @@ import gui.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.PriorityQueue;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import common.Edge;
 import common.Graph;
@@ -32,13 +29,11 @@ public class Kruskal implements Algorithm {
 	boolean graphConnected = true;
 	PriorityQueue<Edge> sortedEdges = null;  
 	Set<Edge> minEdges = null;
-	Set<Vertex> reachedVertices = null;
 	int currentEdge = 0;
 	AlgorithmState currentState = AlgorithmState.Initiating;
 	
 	public Kruskal(Graph graph) {
 		this.graph = graph;
-		reachedVertices = new HashSet<Vertex>();
 		minEdges = new HashSet<Edge>();
 		currentEdge = 0;
 		//Checking connectedness
@@ -92,10 +87,22 @@ public class Kruskal implements Algorithm {
 			if(e == null) {
 				currentState = AlgorithmState.Finished;
 			}
-			else if(!(reachedVertices.contains(e.getSource()) && reachedVertices.contains(e.getTarget()))) {
-				reachedVertices.add(e.getSource());
-				reachedVertices.add(e.getTarget());
-				minEdges.add(e);
+			else {
+				List<Edge> minEdgesAsList = new ArrayList<Edge>();
+				minEdgesAsList.addAll(minEdges);
+				List<Edge> edges = new ArrayList<Edge>();
+				
+				for(Edge e2 : minEdgesAsList) {
+					edges.add(e2);
+					edges.add(new Edge(e2.getTarget(), e2.getSource()));
+				}
+				
+				Dijkstra d = new Dijkstra(new Graph(graph.getVertices(), edges), e.getSource());
+				d.play();
+				HashMap<Vertex, Integer> distance = d.getDistance();
+				if((distance.get(e.getTarget()) == Integer.MAX_VALUE)) {
+					minEdges.add(e);
+				}
 			}
 			return true;
 			
