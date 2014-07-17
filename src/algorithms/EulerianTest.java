@@ -56,7 +56,10 @@ public class EulerianTest implements Algorithm {
 		switch(currentState) {
 		
 		case CalculatingVertexDegree: 
-			if(currentEdge < graph.getEdges().size()) {
+			if(graph.getEdges().isEmpty()) {
+				currentState = AlgorithmState.Finished;
+			}
+			else if(currentEdge < graph.getEdges().size()) {
 				Vertex s = graph.getEdges().get(currentEdge).getSource();
 				Vertex t = graph.getEdges().get(currentEdge).getTarget();
 				vertexDegrees.put(s, vertexDegrees.get(s)+1);
