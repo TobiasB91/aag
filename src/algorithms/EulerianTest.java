@@ -119,7 +119,7 @@ public class EulerianTest implements Algorithm {
 				for(int i = 0; i < notDeletedVertices.size(); i++) {
 					if(dist[i][j] < min) {
 						min = dist[i][j];
-					} else {
+					} else if(dist[i][j] >= Integer.MAX_VALUE){
 						isConnected = false;
 					}
 				}

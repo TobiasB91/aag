@@ -22,6 +22,7 @@ import algorithms.Algorithm;
 import algorithms.Dijkstra;
 import algorithms.FloydWarshall;
 import algorithms.EulerianTest;
+import algorithms.Kruskal;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
@@ -171,6 +172,18 @@ public class MainFrame extends JFrame {
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange()==ItemEvent.SELECTED) {
 					currentAlgorithm = new EulerianTest(canvas.getGraph());
+			      } else if(e.getStateChange()==ItemEvent.DESELECTED) {
+			    	currentAlgorithm = null;
+			      }
+				canvas.repaint();
+			}
+		});
+		
+		tglbtnMinspantree.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange()==ItemEvent.SELECTED) {
+					currentAlgorithm = new Kruskal(canvas.getGraph());
 			      } else if(e.getStateChange()==ItemEvent.DESELECTED) {
 			    	currentAlgorithm = null;
 			      }
