@@ -9,6 +9,8 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
+import algorithms.FordFulkerson;
+
 import common.Edge;
 import common.Graph;
 import common.Vertex;
@@ -114,6 +116,10 @@ public class Canvas extends JPanel implements MouseListener{
 				graph.deleteVertex(collVertex);
 				markedVertex = null;
 				markedEdge = null;
+			}
+		} else if(MainFrame.currentAlgorithm instanceof FordFulkerson) {
+			if(collVertex != null) {
+				FordFulkerson.setSelectedVertex(collVertex);
 			}
 		}
 		repaint();

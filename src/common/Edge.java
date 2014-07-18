@@ -43,4 +43,9 @@ public class Edge {
 	public boolean equals(Object e) {
 		return e instanceof Edge && source.equals(((Edge)e).getSource()) && target.equals(((Edge)e).getTarget());
 	}
+	
+	@Override
+	public int hashCode() {
+		return new Integer(source.getID())*256 + new Integer(target.getID());
+	}
 }

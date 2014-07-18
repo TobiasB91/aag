@@ -21,7 +21,7 @@ public class Dijkstra implements Algorithm {
 	enum AlgorithmState {
 		ChoosingNearestVertex,
 		UpdatingNeighbourDistance,
-		
+		Finished
 	}
 	
 	Graph graph = null;
@@ -80,10 +80,15 @@ public class Dijkstra implements Algorithm {
 			case ChoosingNearestVertex:
 				if(!q.isEmpty()) {
 					currentVertex = q.poll();
+					if(distance.get(currentVertex) == Integer.MAX_VALUE) {
+						currentState = AlgorithmState.Finished;
+						break;
+					}
 					currentState = AlgorithmState.UpdatingNeighbourDistance;
 					return true;
 				} else {
-					return false;
+					currentState = AlgorithmState.Finished;
+					return true;
 				}
 				
 			case UpdatingNeighbourDistance:
@@ -108,6 +113,9 @@ public class Dijkstra implements Algorithm {
 					currentNeighbour = 0;
 				}
 				return true;
+		
+			case Finished:
+				return false;
 		}
 		return true;
 	}
@@ -194,5 +202,9 @@ public class Dijkstra implements Algorithm {
 	
 	public HashMap<Vertex, Integer> getDistance() {
 		return distance;
+	}
+	
+	public HashMap<Vertex, Vertex> getPredecessor() {
+		return predecessor;
 	}
 }

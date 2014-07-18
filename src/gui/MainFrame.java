@@ -23,6 +23,7 @@ import algorithms.Dijkstra;
 import algorithms.FloydWarshall;
 import algorithms.EulerianTest;
 import algorithms.Kruskal;
+import algorithms.FordFulkerson;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
@@ -53,8 +54,8 @@ public class MainFrame extends JFrame {
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-		JLabel lblWeight = new JLabel("weight:");
-		lblWeight.setBounds(25, 40, 50, 20);
+		JLabel lblWeight = new JLabel("weight/cap:");
+		lblWeight.setBounds(15, 40, 77, 20);
 		panel.add(lblWeight);
 		
 		canvas = new Canvas();
@@ -112,7 +113,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		
-		textField.setBounds(85, 40, 30, 20);
+		textField.setBounds(90, 40, 41, 20);
 		panel.add(textField);
 		textField.setColumns(10);
 		
@@ -131,15 +132,16 @@ public class MainFrame extends JFrame {
 		panel.add(tglbtnNewToggleButton);
 		
 		final JToggleButton tglbtnEulerianTest = new JToggleButton("Eulerian test");
-		tglbtnEulerianTest.setBounds(10, 322, 121, 23);
+		tglbtnEulerianTest.setBounds(10, 368, 121, 23);
 		panel.add(tglbtnEulerianTest);
 		
 		final JToggleButton tglbtnMinspantree = new JToggleButton("Kruskal");
-		tglbtnMinspantree.setBounds(10, 347, 121, 23);
+		tglbtnMinspantree.setBounds(10, 345, 121, 23);
 		panel.add(tglbtnMinspantree);
 		
 		final JToggleButton tglbtnFordfulkerson = new JToggleButton("Ford-Fulkerson");
-		tglbtnFordfulkerson.setBounds(10, 371, 121, 23);
+		tglbtnFordfulkerson.setBounds(10, 311, 121, 23);
+		tglbtnFordfulkerson.setEnabled(false);
 		panel.add(tglbtnFordfulkerson);
 		
 
@@ -191,6 +193,18 @@ public class MainFrame extends JFrame {
 			}
 		});
 		
+		tglbtnFordfulkerson.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange()==ItemEvent.SELECTED) {
+					currentAlgorithm = new FordFulkerson(canvas.getGraph());
+			      } else if(e.getStateChange()==ItemEvent.DESELECTED) {
+			    	currentAlgorithm = null;
+			      }
+				canvas.repaint();
+			}
+		});
+		
 		tglbtnNewToggleButton.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -199,18 +213,19 @@ public class MainFrame extends JFrame {
 					
 					tglbtnDijkstra.setEnabled(true);
 					tglbtnFloydWarshall.setEnabled(true);
+					tglbtnFordfulkerson.setEnabled(true);
 					
 			    	tglbtnMinspantree.setEnabled(false);
 			    	tglbtnEulerianTest.setEnabled(false);
-			    	tglbtnFordfulkerson.setEnabled(false);
+			    	
 					
 			      } else if(e.getStateChange()==ItemEvent.DESELECTED) {
 			    	directed = false;
 			    	
 			    	tglbtnMinspantree.setEnabled(true);
 			    	tglbtnEulerianTest.setEnabled(true);
-			    	tglbtnFordfulkerson.setEnabled(true);
-			    	
+
+			    	tglbtnFordfulkerson.setEnabled(false);
 			    	tglbtnDijkstra.setEnabled(false);
 					tglbtnFloydWarshall.setEnabled(false);
 					
@@ -223,4 +238,5 @@ public class MainFrame extends JFrame {
 		
 		contentPane.repaint();
 	}
+	
 }
