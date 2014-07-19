@@ -24,6 +24,7 @@ import algorithms.FloydWarshall;
 import algorithms.EulerianTest;
 import algorithms.Kruskal;
 import algorithms.FordFulkerson;
+import algorithms.MinSpantree;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
@@ -98,7 +99,8 @@ public class MainFrame extends JFrame {
 
 			public void insertUpdate(DocumentEvent arg0) {
 				try {
-					canvas.updateWeight(Integer.parseInt(textField.getText()));
+					Integer parsedInteger = Integer.parseInt(textField.getText());
+					canvas.updateWeight(parsedInteger >= 0 ? parsedInteger : Math.abs(parsedInteger));
 				} catch (NumberFormatException e) {
 					
 				}
@@ -106,7 +108,8 @@ public class MainFrame extends JFrame {
 
 			public void removeUpdate(DocumentEvent arg0) {
 				try {
-					canvas.updateWeight(Integer.parseInt(textField.getText()));
+					Integer parsedInteger = Integer.parseInt(textField.getText());
+					canvas.updateWeight(parsedInteger >= 0 ? parsedInteger : Math.abs(parsedInteger));
 				} catch (NumberFormatException e) {
 					
 				}
@@ -132,17 +135,21 @@ public class MainFrame extends JFrame {
 		panel.add(tglbtnNewToggleButton);
 		
 		final JToggleButton tglbtnEulerianTest = new JToggleButton("Eulerian test");
-		tglbtnEulerianTest.setBounds(10, 368, 121, 23);
+		tglbtnEulerianTest.setBounds(10, 355, 121, 23);
 		panel.add(tglbtnEulerianTest);
 		
 		final JToggleButton tglbtnMinspantree = new JToggleButton("Kruskal");
-		tglbtnMinspantree.setBounds(10, 345, 121, 23);
+		tglbtnMinspantree.setBounds(10, 401, 121, 23);
 		panel.add(tglbtnMinspantree);
 		
 		final JToggleButton tglbtnFordfulkerson = new JToggleButton("Ford-Fulkerson");
 		tglbtnFordfulkerson.setBounds(10, 311, 121, 23);
 		tglbtnFordfulkerson.setEnabled(false);
 		panel.add(tglbtnFordfulkerson);
+		
+		final JToggleButton tglbtnMinspantree_1 = new JToggleButton("MinSpantree");
+		tglbtnMinspantree_1.setBounds(10, 378, 121, 23);
+		panel.add(tglbtnMinspantree_1);
 		
 
 		tglbtnDijkstra.addItemListener(new ItemListener() {
@@ -205,6 +212,18 @@ public class MainFrame extends JFrame {
 			}
 		});
 		
+		tglbtnMinspantree_1.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange()==ItemEvent.SELECTED) {
+					currentAlgorithm = new MinSpantree(canvas.getGraph());
+			      } else if(e.getStateChange()==ItemEvent.DESELECTED) {
+			    	currentAlgorithm = null;
+			      }
+				canvas.repaint();
+			}
+		});
+		
 		tglbtnNewToggleButton.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -216,6 +235,7 @@ public class MainFrame extends JFrame {
 					tglbtnFordfulkerson.setEnabled(true);
 					
 			    	tglbtnMinspantree.setEnabled(false);
+			    	tglbtnMinspantree_1.setEnabled(false);
 			    	tglbtnEulerianTest.setEnabled(false);
 			    	
 					
@@ -223,6 +243,7 @@ public class MainFrame extends JFrame {
 			    	directed = false;
 			    	
 			    	tglbtnMinspantree.setEnabled(true);
+			    	tglbtnMinspantree_1.setEnabled(true);
 			    	tglbtnEulerianTest.setEnabled(true);
 
 			    	tglbtnFordfulkerson.setEnabled(false);
@@ -238,5 +259,4 @@ public class MainFrame extends JFrame {
 		
 		contentPane.repaint();
 	}
-	
 }

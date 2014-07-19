@@ -45,17 +45,6 @@ public class FloydWarshall implements Algorithm {
 				}
 			}
 		}
-		
-		//for(int k = 1; k < graph.getVertices().size(); k++) {
-		//	for(int i = 1; i < graph.getVertices().size(); i++) {
-		//		for(int j = 1; j < graph.getVertices().size(); j++) {
-		//			if(dist[i][j] > dist[i][k] + dist[k][j]) {
-		//				dist[i][j] = dist[i][k] + dist[k][j];
-		//			}
-		//		}
-		//	}
-		//}
-		
 	}
 	
 	@Override
